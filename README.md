@@ -24,7 +24,8 @@ SpamShield XAI is a live, web-based email spam classifier that not only predicts
 
 | Spam Detection Result | LIME Explanation (XAI) |
 |:---------------------:|:----------------------:|
-| <img width="956" height="466" alt="Spam Detection Result" src="..."><br>Figure 1: Spam detection result | <img width="871" height="578" alt="LIME Explanation" src="..."><br>Figure 2: LIME explanation |
+| <img width="956" height="466" alt="Screenshot 2026-04-16 174636" src="https://github.com/user-attachments/assets/8d32e3bf-5f49-4595-a832-f59df752bbe2" />
+<br>Figure 1: Spam detection result | <img width="871" height="578" alt="Screenshot 2026-04-16 174706" src="https://github.com/user-attachments/assets/e4fbba4a-8f7a-46de-ba11-d372da1c04fd" /><br>Figure 2: LIME explanation |
 
 ---
 
