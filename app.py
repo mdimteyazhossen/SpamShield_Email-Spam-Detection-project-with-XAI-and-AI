@@ -1,5 +1,7 @@
 import streamlit as st
 import pickle
+from lime.lime_text import LimeTextExplainer
+import streamlit.components.v1 as components
 
 #PAGE CONFIGURATION
 st.set_page_config(
@@ -8,7 +10,23 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="collapsed"
 )
+st.markdown("""
+<style>
 
+    @media screen and (max-width: 600px) {
+        .main-header {
+            font-size: 2rem !important;
+        }
+        .sub-header {
+            font-size: 0.9rem !important;
+        }
+        .stButton button {
+            font-size: 16px !important;
+            padding: 10px 0 !important;
+        }
+    }
+</style>
+""", unsafe_allow_html=True)
 #CUSTOM CSS FOR AESTHETICS
 st.markdown("""
 <style>
@@ -94,6 +112,13 @@ def load_assets():
 
 model, vectorizer = load_assets()
 
+#lime explainer
+@st.cache_resource
+def get_explainer():
+    return LimeTextExplainer(class_names=['Ham (safe)','Spam'])
+
+explainer = get_explainer()
+
 #UI HEADER
 st.markdown('<div class="main-header">🛡️ SpamShield AI</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">AI-powered email threat detection · Built with Naive Bayes & NLP</div>', unsafe_allow_html=True)
@@ -102,7 +127,7 @@ st.markdown('<div class="sub-header">AI-powered email threat detection · Built 
 st.markdown("### 📧 Paste Email Content")
 user_input = st.text_area(
     label="Email body text",
-    placeholder="e.g. 'Congratulations! You've won a free iPhone. Click here to claim your prize...'",
+    placeholder="e.g. \"Congratulations! You've won a free iPhone. Click here to claim your prize...\"",
     height=180,
     label_visibility="collapsed"
 )
@@ -149,6 +174,15 @@ if analyze_btn:
             st.write(f"- **Vectorizer:** CountVectorizer (bag-of-words)")
             st.write(f"- **Confidence Threshold:** 50%")
             st.caption("The model analyzes word frequencies and patterns associated with spam emails.")
+        #lime explanation
+        def predict_proba(texts):
+            transformed = vectorizer.transform(texts)
+            return model.predict_proba(transformed)
+        with st.spinner("🔍 Explaining the prediction..."):
+            exp = explainer.explain_instance(user_input, predict_proba, num_features=10)
+        st.subheader("🔍 Why this prediction?")
+        components.html(exp.as_html(),height=400, scrolling=True)
+        st.caption("🟢 Green words = Ham (Safe) | 🔴 Red words = Spam")
     else:
         st.warning("⚠️ Please paste some email content to analyze.")
 
@@ -161,3 +195,6 @@ st.markdown(
     '<a href="https://www.kaggle.com/mdimteyazhossen" target="_blank">Kaggle</a></div>',
     unsafe_allow_html=True
 )
+
+
+
